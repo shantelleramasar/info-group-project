@@ -1,5 +1,5 @@
 let currentSubject = ""; 
-let allData = {}; // This is your "Filing Cabinet"
+let allData = JSON.parse(localStorage.getItem('studyHubData')) || {};
 
 // 1. Select Elements
 const sideMenu = document.getElementById('side-menu');
@@ -49,25 +49,24 @@ function updateColorDisplay(event) {
 }
 
 function showDashboard() {
+    // Show the grid
     subjectsSection.classList.remove('hidden');
+    // Hide the details
     subjectDetail.classList.remove('active-view');
+    // Also explicitly hide the detail view just in case
+    subjectDetail.style.display = 'none'; 
 }
 
-// THIS FUNCTION NOW FILTERS ASSIGNMENTS
 function openSubjectDetails(name) {
     currentSubject = name; 
     detailTitle.innerText = name;
-    
-    // THE FIX: Make sure the button is visible here!
     addAssignBtn.style.display = 'block';
 
-    // Clear the UI list
     const items = assignmentList.querySelectorAll('.assignment-item');
     items.forEach(item => item.remove());
 
-    // Load only assignments belonging to this subject
-    if (allData[name]) {
-        allData[name].forEach(task => {
+    if (allData[name] && allData[name].tasks) {
+        allData[name].tasks.forEach(task => {
             renderAssignment(task.name, task.dateValue);
         });
     }
@@ -81,15 +80,15 @@ function checkUpcomingDeadlines() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    Object.keys(allData).forEach(function(subject) {
-        allData[subject].forEach(function(task) {
+    Object.keys(allData).forEach(function(subjectName) {
+        const tasks = allData[subjectName].tasks || [];
+        tasks.forEach(function(task) {
             const dueDate = new Date(task.dateValue);
             dueDate.setHours(0, 0, 0, 0);
 
             const timeDiff = dueDate - today;
             const daysLeft = Math.round(timeDiff / (1000 * 60 * 60 * 24));
 
-            // Change this to >= 0 just to TEST if text appears
             if (daysLeft === 1 || daysLeft === 0) {
                 urgentCount++;
             }
@@ -97,12 +96,34 @@ function checkUpcomingDeadlines() {
     });
 
     if (urgentCount > 0) {
-        // We set the text FIRST, then show the banner
         notifMessage.innerText = "Heads up! " + urgentCount + " assignment(s) due tomorrow.";
         notifBanner.classList.remove('hidden');
     } else {
         notifBanner.classList.add('hidden');
     }
+}
+
+function renderSubjectCard(name, color) {
+    const newCard = document.createElement('div');
+    newCard.className = 'subject-card';
+    newCard.dataset.subject = name;
+    newCard.style.borderTop = `5px solid ${color}`;
+    
+    const taskCount = (allData[name] && allData[name].tasks) ? allData[name].tasks.length : 0;
+
+    newCard.innerHTML = `
+        <div class="subject-icon-circle" style="background-color: ${color}22; color: ${color}">
+            🎓
+        </div>
+        <h3>${name}</h3>
+        <p class="assignment-count">${taskCount} Assignment${taskCount === 1 ? '' : 's'}</p> 
+    `;
+
+    newCard.addEventListener('click', function() { 
+        openSubjectDetails(name); 
+    });
+
+    subjectGrid.insertBefore(newCard, addSubjectBtn);
 }
 
 function saveSubject(event) {
@@ -112,45 +133,28 @@ function saveSubject(event) {
 
     if (name.trim() === "") return alert("Please enter a subject name!");
 
-    
-const newCard = document.createElement('div');
-newCard.className = 'subject-card';
-newCard.dataset.subject = name; // This "tags" the card with the subject name
-newCard.style.borderTop = `5px solid ${color}`;
-newCard.innerHTML = `
-    <div class="subject-icon-circle" style="background-color: ${color}22; color: ${color}">
-        🎓
-    </div>
-    <h3>${name}</h3>
-    <p class="assignment-count">0 Assignments</p> 
-`;
+    allData[name] = {
+        color: color,
+        tasks: []
+    };
 
-    // CHANGED TO STANDARD FUNCTION
-    newCard.addEventListener('click', function() { 
-        openSubjectDetails(name); 
-    });
-
-    subjectGrid.insertBefore(newCard, addSubjectBtn);
-
+    renderSubjectCard(name, color);
+    saveToLocalStorage();
     subjectForm.reset();
     colorDisplay.style.backgroundColor = '#f8bbd0'; 
     closeModal();
-
-    if (!allData[name]) {
-        allData[name] = [];
-    }
 }
 
-// HELPER FUNCTION: Draws the assignment card
 function renderAssignment(name, dateValue, subjectName = "") {
     const today = new Date();
     const dueDate = new Date(dateValue);
     const timeDiff = dueDate - today;
     const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
 
+    // Calculate percentage for progress bar (2-week window)
     let barPercent = (daysLeft / 14) * 100;
     if (barPercent > 100) barPercent = 100;
-    if (barPercent < 5) barPercent = 5;
+    if (barPercent < 0) barPercent = 0; // Don't allow negative widths
 
     let statusColor = daysLeft <= 3 ? "#ff4d4d" : "#f48fb1";
     let statusText = daysLeft <= 0 ? "Due Today!" : `${daysLeft} Days Left`;
@@ -159,8 +163,9 @@ function renderAssignment(name, dateValue, subjectName = "") {
     const newItem = document.createElement('div');
     newItem.className = 'assignment-item';
     
-    // Create the subject tag ONLY if a subject name is provided
-    const subjectTag = subjectName ? `<div class="subject-tag">${subjectName}</div>` : "";
+    // Safety check for subject color
+    const sColor = (subjectName && allData[subjectName]) ? allData[subjectName].color : "#f8bbd0";
+    const subjectTag = subjectName ? `<div class="subject-tag" style="background:${sColor}22; color:${sColor}; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; display: inline-block; margin-bottom: 5px;">${subjectName}</div>` : "";
 
     newItem.innerHTML = `
         <div class="assignment-info">
@@ -176,7 +181,20 @@ function renderAssignment(name, dateValue, subjectName = "") {
         </div>
         <div class="assignment-notes"><textarea placeholder="Add notes..."></textarea></div>
     `;
-    assignmentList.insertBefore(newItem, addAssignBtn);
+
+    // Ensure we are adding to the list properly
+    if (assignmentList) {
+        // We prepend or insert before the "Add" button if it exists inside the list
+        if (addAssignBtn && assignmentList.contains(addAssignBtn)) {
+            assignmentList.insertBefore(newItem, addAssignBtn);
+        } else {
+            assignmentList.appendChild(newItem);
+        }
+    }
+}
+
+function saveToLocalStorage() {
+    localStorage.setItem('studyHubData', JSON.stringify(allData));
 }
 
 // 3. Assign Event Listeners
@@ -192,29 +210,27 @@ assignForm.addEventListener('submit', function(e) {
         return;
     }
 
-    // 1. Save the data
     if (!allData[selectedSubject]) {
-        allData[selectedSubject] = [];
+        allData[selectedSubject] = { color: "#f8bbd0", tasks: [] }; 
     }
-    allData[selectedSubject].push({ name: name, dateValue: dateValue });
+    
+    allData[selectedSubject].tasks.push({ name: name, dateValue: dateValue });
 
     const card = document.querySelector(`.subject-card[data-subject="${selectedSubject}"]`);
     if (card) {
         const countText = card.querySelector('.assignment-count');
-        const total = allData[selectedSubject].length;
+        const total = allData[selectedSubject].tasks.length;
         countText.innerText = `${total} Assignment${total === 1 ? '' : 's'}`;
     }
 
-    // 2. Draw it on screen
-    if (currentSubject === selectedSubject || currentSubject === "All Assignments" || currentSubject === "Global View") {
-        const tag = (currentSubject === "All Assignments" || currentSubject === "Global View") ? selectedSubject : "";
+    saveToLocalStorage();
+
+    if (currentSubject === selectedSubject || currentSubject === "All Assignments") {
+        const tag = (currentSubject === "All Assignments") ? selectedSubject : "";
         renderAssignment(name, dateValue, tag);
     }
 
-    // --- THE TRIGGER ---
-    // 3. Check deadlines immediately after saving!
     checkUpcomingDeadlines();
-
     assignForm.reset();
     assignModal.style.display = 'none';
 });
@@ -226,39 +242,25 @@ backBtn.addEventListener('click', showDashboard);
 colorInput.addEventListener('input', updateColorDisplay);
 subjectForm.addEventListener('submit', saveSubject);
 
-// 1. Opening the modal from within a Subject
-// 1. Opening the modal from within a Subject
 addAssignBtn.addEventListener('click', function() {
-    // Hide the subject selector group
     document.getElementById('subject-select-group').classList.add('hidden-field');
-    
-    // THE FIX: We must create an option so the select box has a value to hold
-    subjectSelect.innerHTML = '<option value="' + currentSubject + '" selected>' + currentSubject + '</option>';
+    subjectSelect.innerHTML = `<option value="${currentSubject}" selected>${currentSubject}</option>`;
     subjectSelect.value = currentSubject;
-    
     assignModal.style.display = 'flex';
 });
 
-// 2. Closing the modal with the Cancel button
 closeAssignBtn.addEventListener('click', function() {
     assignModal.style.display = 'none';
 });
 
-// 3. Closing the modal by clicking the dark background
 window.addEventListener('click', function(e) {
-    if (e.target === modal) {
-        closeModal();
-    }
-    if (e.target === assignModal) {
-        assignModal.style.display = 'none';
-    }
+    if (e.target === modal) closeModal();
+    if (e.target === assignModal) assignModal.style.display = 'none';
 });
 
-// 1. Select the new sidebar elements
 const sidebarSubjects = document.getElementById('nav-subjects');
 const sidebarAssignments = document.getElementById('nav-assignments');
 
-// 2. Link them to your existing functions
 sidebarSubjects.addEventListener('click', showDashboard);
 
 sidebarAssignments.addEventListener('click', function() {
@@ -269,50 +271,48 @@ sidebarAssignments.addEventListener('click', function() {
     const items = assignmentList.querySelectorAll('.assignment-item');
     items.forEach(item => item.remove());
 
-    Object.keys(allData).forEach(subject => {
-        allData[subject].forEach(task => {
-            // PASS THE SUBJECT NAME HERE -----------------v
-            renderAssignment(task.name, task.dateValue, subject);
-        });
+    Object.keys(allData).forEach(subjectName => {
+        const subjectObject = allData[subjectName];
+        if (subjectObject.tasks) {
+            subjectObject.tasks.forEach(task => {
+                renderAssignment(task.name, task.dateValue, subjectName);
+            });
+        }
     });
 
     subjectsSection.classList.add('hidden');
     subjectDetail.classList.add('active-view');
 });
 
-// --- QUICK ACTIONS SECTION ---
+qaNewSubject.addEventListener('click', openModal);
 
-// 1. Shortcut to open the Subject Creation Modal
-qaNewSubject.addEventListener('click', function() {
-    openModal();
-});
-
-// 2. Shortcut to open the Assignment Modal with the Subject Dropdown
 qaQuickAdd.addEventListener('click', function() {
-    // Show the subject dropdown group
-    document.getElementById('subject-select-group').classList.remove('hidden-field');
-
-    // ... your existing code to clear and fill subjectSelect ...
+    const group = document.getElementById('subject-select-group');
+    if(group) group.classList.remove('hidden-field');
+    
     subjectSelect.innerHTML = '<option value="" disabled selected>Choose a subject...</option>';
-    const subjectNames = Object.keys(allData);
-
-    if (subjectNames.length === 0) {
-        alert("Please create a subject first!");
-        return;
-    }
-
-    subjectNames.forEach(function(name) {
+    
+    Object.keys(allData).forEach(name => {
         const option = document.createElement('option');
         option.value = name;
         option.textContent = name;
         subjectSelect.appendChild(option);
     });
 
-    // Pre-select if we are currently in a subject view
-    if (currentSubject && currentSubject !== "All Assignments") {
-        subjectSelect.value = currentSubject;
-    }
-
-    assignModal.style.display = 'flex';
+    assignModal.style.display = 'flex'; // This forces it to center
 });
 
+function loadSavedUI() {
+    const existingCards = document.querySelectorAll('.subject-card');
+    existingCards.forEach(card => card.remove());
+
+    Object.keys(allData).forEach(name => {
+        const subject = allData[name];
+        renderSubjectCard(name, subject.color || "#f8bbd0");
+    });
+    
+    checkUpcomingDeadlines();
+}
+
+// ✅ RUN THE STARTUP
+loadSavedUI();
