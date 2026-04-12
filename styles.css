@@ -9,9 +9,138 @@
   width: 100%;
   height: 173px;
   padding: 0 35px;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   border: 1px solid #000;
   background: #A2708A;
+  position: relative;
 }
 
+#menu{
+  width: 57px;
+  height: 57px;  
+}
+
+#icon{
+   margin: 0 auto;
+}
+
+#search{
+  width: 49px;
+  height: 49px;  
+}
+
+#menu,
+#search, #icon{
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#searchInput {
+  width: 0;
+  opacity: 0;
+  padding: 0;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.search-container.active #searchInput {
+  width: 200px;
+  opacity: 1;
+  padding: 5px;
+  border-bottom: 1px;
+}
+
+#searchBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+#searchInput {
+  background: transparent;
+  border-bottom: 2px solid black;
+  color: black;
+}
+
+.main-content{
+  width: 100%;
+  height: 100%;
+  background: #C3D2D5;
+  padding-top:2%;
+  padding-left:2%;
+  padding-right:2%;
+}
+
+.card {
+  position: relative;
+  height: 241px;
+  width: 100%;
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(188px, 1fr));
+  gap: 20px;
+}
+
+.card-favorite{
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.card-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+}
+
+.card-content img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  border-radius: 10px;
+}
+
+.card-favorite {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 40px; 
+  height: 40px;
+  z-index: 2; 
+}
+
+#query-box{
+ display: inline-flex;
+ justify-content: flex-start;
+ align-items: center;
+ padding-bottom: 2%;
+ color: #000;
+ font-family: "Instrument Sans";
+ font-size: 24px;
+ font-style: normal;
+ font-weight: 400;
+ line-height: normal;
+}

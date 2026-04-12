@@ -4,14 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>Library</title>
 </head>
 <body>
-    <header id="main-head"> </header>
-    <div class="search-bar"></div>
+    <header id="main-head"> 
+        <button id="menu">
+            <svg xmlns="http://www.w3.org/2000/svg" width="57" height="57" viewBox="0 0 57 57" fill="none">
+            <path d="M7.125 28.5H49.875M7.125 14.25H49.875M7.125 42.75H49.875" stroke="#1E1E1E" stroke-width="4.9875" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <button id="icon">
+            <img src="carrot.png" alt="placeholder">
+        </button>
+            <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search books..." />
+        <button id="searchBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="49" height="49" viewBox="0 0 49 49" fill="none">
+            <path d="M42.875 42.875L33.9937 33.9937M38.7917 22.4583C38.7917 31.479 31.479 38.7917 22.4583 38.7917C13.4377 38.7917 6.125 31.479 6.125 22.4583C6.125 13.4377 13.4377 6.125 22.4583 6.125C31.479 6.125 38.7917 13.4377 38.7917 22.4583Z" stroke="#1E1E1E" stroke-width="4.59375" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        </div>
+    </header>
     <section class="main-content">
-        <div class="card-content"></div>
-    </section>
+         <div class="card-grid" id="cardGrid"></div>
+</section>
     <footer></footer>
+    <script src="functions.js"></script>
 </body>
 </html>
