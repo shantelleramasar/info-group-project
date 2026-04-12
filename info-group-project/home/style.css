@@ -193,6 +193,7 @@ flex: 0 1 calc(31% - 10px);
   display: flex;
   flex-direction: column;
   gap: 10px;
+ transition: transform 0.3s ease;
 }
 
 
@@ -203,7 +204,7 @@ flex: 0 1 calc(31% - 10px);
 
 .snapshot:hover {
     transform: translateY(-5px);
-    transition: transform 0.3s ease;
+   
 }
 
 .snapshot h3 {
