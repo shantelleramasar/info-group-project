@@ -41,6 +41,11 @@
    margin: 0 auto;
 }
 
+#icon img{
+height: 35%;
+width: 25%;
+}
+
 #search{
   width: 49px;
   height: 49px;  
