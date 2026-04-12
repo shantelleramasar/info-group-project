@@ -9,6 +9,13 @@ searchBtn.addEventListener("click", () => {
   searchContainer.classList.toggle("active");
 });
 
+const menuBtn = document.getElementById("menu");
+const sidebar = document.getElementById("sidebar");
+
+menuBtn.addEventListener("click", () => {
+  sidebar.classList.toggle("active");
+});
+
 function createCard(item) {
   const coverId = item.cover_i;
 
@@ -18,11 +25,23 @@ function createCard(item) {
 
   return `
     <div class="card">
-      <div class="card-content" style="background-image: url('${imageUrl}')"></div>
-      <button class="card-favorite">❤️</button>
+      <div class="card-content" 
+           style="background-image: url('${imageUrl}')">
+      </div>
+
+      <div class="card-title">${item.title}</div>
+
+      <div class="heart">❤️</div>
     </div>
   `;
 }
+
+document.getElementById("cardGrid").addEventListener("click", (e) => {
+  const card = e.target.closest(".card");
+  if (!card) return;
+
+  card.classList.toggle("favorited");
+});
 
 function loadMoreCards() {
   const grid = document.getElementById("cardGrid");
@@ -56,6 +75,12 @@ window.addEventListener("scroll", () => {
     window.innerHeight + window.scrollY >= document.body.offsetHeight - 100
   ) {
     loadMoreCards();
+  }
+});
+
+document.getElementById("searchInput").addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    handleSearch();
   }
 });
 

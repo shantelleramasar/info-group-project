@@ -21,6 +21,22 @@
   height: 57px;  
 }
 
+#sidebar {
+  position: fixed;
+  top: 0;
+  left: -250px; 
+  width: 250px;
+  height: 100%;
+  background: #A2708A;
+  padding: 20px;
+  z-index: 1000;
+  transition: 0.3s;
+}
+
+#sidebar.active {
+  left: 0;
+}
+
 #icon{
    margin: 0 auto;
 }
@@ -91,17 +107,37 @@
   transform: scale(1.05);
 }
 
+.card-title {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+
+  padding: 5px;
+  font-size: 14px;
+  text-align: center;
+}
+
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(188px, 1fr));
   gap: 20px;
 }
 
-.card-favorite{
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
+.heart {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  opacity: 0;
+  font-size: 20px;
+  transition: 0.2s;
+}
+
+.card.favorited .heart {
+  opacity: 1;
 }
 
 .card-content {
@@ -121,15 +157,6 @@
   height: 100%;
   object-fit: cover; 
   border-radius: 10px;
-}
-
-.card-favorite {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  width: 40px; 
-  height: 40px;
-  z-index: 2; 
 }
 
 #query-box{
