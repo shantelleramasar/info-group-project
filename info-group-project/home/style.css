@@ -11,6 +11,29 @@ body {
 display: flex;
 }
 
+body {
+    background-image: linear-gradient(rgba(217, 227, 216, 0.8), rgba(217, 227, 216, 0.8)), 
+   url('https://images.unsplash.com/photo-1526243741027-444d633d7365?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+    
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    
+    display: flex;
+    margin: 0;
+    min-height: 100vh;
+}
+
+
+main {
+    margin-left: 70px;
+    padding: 40px;
+    width: calc(100% - 70px);
+    background-color: rgba(255, 255, 255, 0.6); /* This creates a "frosted glass" look */
+    min-height: 100vh;
+}
+
 
 #side-menu {
 position: fixed;
@@ -59,12 +82,34 @@ position: fixed;
   cursor: pointer;
 }
 
-
-main {
-  margin-left: 70px;
-  padding: 40px;
-  width: calc(100% - 70px);
+/* When NOT collapsed, the menu grows */
+#side-menu:not(.collapsed) {
+    width: 200px;
+    align-items: flex-start;
+    padding-left: 20px;
 }
+
+
+#side-menu:not(.collapsed) .text {
+    display: inline;
+    margin-left: 15px;
+    font-size: 16px;
+}
+
+
+#side-menu:not(.collapsed) ~ main {
+    margin-left: 200px;
+    width: calc(100% - 200px);
+    transition: margin-left 0.3s ease;
+}
+
+
+#side-menu {
+    transition: width 0.3s ease;
+}
+
+
+
 
 #header-section {
   display: flex;
@@ -215,4 +260,10 @@ flex: 0 1 calc(31% - 10px);
 .snapshot p {
   font-size: 14px;
   opacity: 0.8;
+}
+
+#header-logo {
+    width: 150px;
+    height: auto;
+    
 }

@@ -53,7 +53,6 @@ firebase.auth().onAuthStateChanged((user) => {
       <li><a href="#"><span class="icon">&#128218;</span><span class="text">Library</span></a></li>
       <li><a href="#"><span class="icon">&#128214;</span><span class="text">Your Books</span></a></li>
       <li><a href="#"><span class="icon">&#128221;</span><span class="text">Assignments</span></a></li>
-      <li><a href="#"><span class="icon">&#128200;</span><span class="text">Analytics</span></a></li>
       <li id="authButton"></li>
     </ul>
   </nav>
@@ -62,7 +61,7 @@ firebase.auth().onAuthStateChanged((user) => {
   <main>
    <section id="header-section">
     <img src="logo.png" alt="Logo" id="header-logo">
-    <h1 id="site-name">Our Web Name</h1>
+    <h1 id="site-name">StudyVerse</h1>
   </section>
 
   
@@ -85,17 +84,6 @@ firebase.auth().onAuthStateChanged((user) => {
       <button class="arrow right" aria-label="Scroll Right">&#10095;</button>
     </section>
 
-    
-    <section id="book-slider-2" class="book-slider-section">
-      <button class="arrow left" aria-label="Scroll Left">&#10094;</button>
-      <div class="book-slider">
-        <div class="book-item"><img src="book5.jpg" alt="Book 5"></div>
-        <div class="book-item"><img src="book6.jpg" alt="Book 6"></div>
-        <div class="book-item"><img src="book7.jpg" alt="Book 7"></div>
-        <div class="book-item"><img src="book8.jpg" alt="Book 8"></div>
-      </div>
-      <button class="arrow right" aria-label="Scroll Right">&#10095;</button>
-    </section>
 
     
     <section id="snapshots">
@@ -111,14 +99,7 @@ firebase.auth().onAuthStateChanged((user) => {
         <div class="icon">📝</div>   <h3>Assignments</h3>
         <p>Track upcoming assignments</p>
       </div>
-      <div class="snapshot">
-        <div class="icon">📊</div> <h3>Analytics</h3>
-        <p>See your study stats</p>
-      </div>
-      <div class="snapshot">
-        <div class="icon">👤</div> <h3>Profile</h3>
-        <p>Manage your account</p>
-      </div>
+
     </section>
 
   </main>
@@ -136,7 +117,7 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('../service-worker.js');
 }
 </script>
-
-
+<script src="home.js"></script> 
 </body>
+
 </html>
