@@ -16,15 +16,28 @@ menuBtn.addEventListener("click", () => {
   sidebar.classList.toggle("active");
 });
 
+const closeBtn = document.getElementById("closeSidebar");
+
+closeBtn.addEventListener("click", () => {
+  sidebar.classList.remove("active");
+  overlay.classList.remove("active");
+});
+
 function createCard(item) {
   const coverId = item.cover_i;
 
   const imageUrl = coverId
     ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`
     : `https://via.placeholder.com/188x241?text=No+Image`;
+  
+  let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+  const isFavorited = favorites.some(f => f.key === item.key) ? "favorited" : "";
 
   return `
-    <div class="card">
+    <div class="card ${isFavorited}" 
+         data-id="${item.key}" 
+         data-title="${item.title}">
+
       <div class="card-content" 
            style="background-image: url('${imageUrl}')">
       </div>
@@ -32,15 +45,32 @@ function createCard(item) {
       <div class="card-title">${item.title}</div>
 
       <div class="heart">❤️</div>
+
     </div>
   `;
 }
+
+let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
 
 document.getElementById("cardGrid").addEventListener("click", (e) => {
   const card = e.target.closest(".card");
   if (!card) return;
 
-  card.classList.toggle("favorited");
+  const id = card.dataset.id;
+  const title = card.dataset.title;
+
+  const existing = favorites.find(f => f.key === id);
+
+  if (existing) {
+    favorites = favorites.filter(f => f.key !== id);
+    card.classList.remove("favorited");
+  } else {
+    favorites.push({ key: id, title: title });
+    card.classList.add("favorited");
+  }
+
+  localStorage.setItem("favorites", JSON.stringify(favorites));
+  renderSidebarFavorites(); 
 });
 
 function loadMoreCards() {
@@ -97,4 +127,19 @@ async function handleSearch() {
   loadMoreCards();
 }
 
+function renderSidebarFavorites() {
+  const list = document.getElementById("favoritesList");
+
+  let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+
+  let html = "";
+
+  favorites.forEach(book => {
+    html += `<p>${book.title}</p>`;
+  });
+
+  list.innerHTML = html;
+}
+
 loadDefaultBooks();
+renderSidebarFavorites();

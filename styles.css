@@ -37,6 +37,18 @@
   left: 0;
 }
 
+#sidebar h3{
+  padding-bottom: 15px;
+}
+
+#closeSidebar {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
 #icon{
    margin: 0 auto;
 }
@@ -130,6 +142,16 @@ width: 25%;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(188px, 1fr));
   gap: 20px;
+}
+
+#favoritesList p {
+  padding: 8px;
+  border-bottom: 1px solid rgba(0,0,0,0.2);
+  cursor: pointer;
+}
+
+#favoritesList p:hover {
+  background: rgba(0,0,0,0.1);
 }
 
 .heart {
