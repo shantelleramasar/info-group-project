@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Web Name</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="../manifest.json">
+</head>
+<body>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAT74JRqSabG-CyfQSYLGM6I_TIFuudAkk",
+  authDomain: "info-group-project-5db1f.firebaseapp.com",
+  projectId: "info-group-project-5db1f",
+  storageBucket: "info-group-project-5db1f.firebasestorage.app",
+  messagingSenderId: "654146332109",
+  appId: "1:654146332109:web:e4f3001036c040a2885084"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+</script>
+
+<script>
+firebase.auth().onAuthStateChanged((user) => {
+
+  
+  if (!user) {
+    window.location.href = "../login.html";
+    return;
+  }
+
+  
+  const btn = document.getElementById("authButton");
+
+  if (btn) {
+    btn.innerHTML = `
+      <button onclick="logout()" class="login-btn">Logout</button>
+    `;
+  }
+
+});
+</script>
+  
+  <nav id="side-menu" class="collapsed">
+    <button id="toggle-menu" aria-label="Toggle Side Menu">&#9776;</button>
+    <ul>
+      <li><a href="#"><span class="icon">&#127968;</span><span class="text">Home</span></a></li>
+      <li><a href="#"><span class="icon">&#128218;</span><span class="text">Library</span></a></li>
+      <li><a href="#"><span class="icon">&#128214;</span><span class="text">Your Books</span></a></li>
+      <li><a href="#"><span class="icon">&#128221;</span><span class="text">Assignments</span></a></li>
+      <li id="authButton"></li>
+    </ul>
+  </nav>
+
+  
+  <main>
+   <section id="header-section">
+    <img src="logo.png" alt="Logo" id="header-logo">
+    <h1 id="site-name">StudyVerse</h1>
+  </section>
+
+  
+
+  <section id="search-section">
+    <span id="search-icon">&#128269;</span> 
+    <input type="text" id="search-input" placeholder="Search textbooks...">
+    <button id="search-btn">Search</button>
+  </section>
+
+    
+    <section id="book-slider-1" class="book-slider-section">
+      <button class="arrow left" aria-label="Scroll Left">&#10094;</button>
+      <div class="book-slider">
+        <div class="book-item"><img src="book1.jpg" alt="Book 1"></div>
+        <div class="book-item"><img src="book2.jpg" alt="Book 2"></div>
+        <div class="book-item"><img src="book3.jpg" alt="Book 3"></div>
+        <div class="book-item"><img src="book4.jpg" alt="Book 4"></div>
+      </div>
+      <button class="arrow right" aria-label="Scroll Right">&#10095;</button>
+    </section>
+
+
+    
+    <section id="snapshots">
+      <div class="snapshot">
+        <div class="icon">🌐</div> <h3>Library</h3>
+        <p>View all available textbooks</p>
+      </div>
+      <div class="snapshot">
+        <div class="icon">📚</div> <h3>Your Books</h3>
+        <p>Access your saved books</p>
+      </div>
+      <div class="snapshot">
+        <div class="icon">📝</div>   <h3>Assignments</h3>
+        <p>Track upcoming assignments</p>
+      </div>
+
+    </section>
+
+  </main>
+
+  <script>
+function logout() {
+  firebase.auth().signOut().then(() => {
+    window.location.href = "../login.html";
+  });
+}
+</script>
+
+  <script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('../service-worker.js');
+}
+</script>
+<script src="home.js"></script> 
+</body>
+
+</html>
