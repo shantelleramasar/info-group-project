@@ -274,10 +274,10 @@ sidebarAssignments.addEventListener('click', function() {
     Object.keys(allData).forEach(subjectName => {
         const subjectObject = allData[subjectName];
         if (subjectObject.tasks) {
-            subjectObject.tasks.forEach(task => {
-                renderAssignment(task.name, task.dateValue, subjectName);
-            });
-        }
+        subjectObject.tasks.forEach(task => {
+        renderAssignment(task.name, task.dateValue, subjectName);
+        });
+    }
     });
 
     subjectsSection.classList.add('hidden');
@@ -309,7 +309,7 @@ function loadSavedUI() {
     Object.keys(allData).forEach(name => {
         const subject = allData[name];
         renderSubjectCard(name, subject.color || "#f8bbd0");
-    });
+});
     
     checkUpcomingDeadlines();
 }

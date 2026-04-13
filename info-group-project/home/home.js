@@ -18,10 +18,10 @@ document.querySelectorAll('.snapshot, #side-menu ul li').forEach(item => {
         const pageName = titleElement.innerText.trim();
 
        
-        if (pageName === "Home") window.location.href = "home.html";
-        if (pageName === "Library") window.location.href = "library.html";
-        if (pageName === "Your Books") window.location.href = "books.html";
-        if (pageName === "Assignments") window.location.href = "assignments.html";
+if (pageName === "Home") window.location.href = "index.html";
+if (pageName === "Library") window.location.href = "mylibrary.html";
+if (pageName === "Your Books") window.location.href = "mybooks.html";
+if (pageName === "Assignments") window.location.href = "assignment.html"
     });
 });
 
@@ -79,7 +79,7 @@ if (searchBtn) {
     const query = searchInput.value.trim();
     if (query) {
         
-        window.location.href = `library.html?search=${encodeURIComponent(query)}`;
+        fetchBooks(query);
     }
 });
 }
@@ -88,7 +88,7 @@ if (searchBtn) {
 if (searchInput) {
     searchInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter' && searchInput.value) {
-            fetchBooks(searchInput.value);
+            fetchBooks(query);
         }
     });
 }

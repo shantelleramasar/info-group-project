@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Our Web Name</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="manifest" href="../manifest.json">
+  <link rel="manifest" href="manifest.json">
 </head>
 <body>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -30,7 +30,7 @@ firebase.auth().onAuthStateChanged((user) => {
 
   
   if (!user) {
-    window.location.href = "../login.html";
+    window.location.href = "login.html";
     return;
   }
 
@@ -49,13 +49,33 @@ firebase.auth().onAuthStateChanged((user) => {
   <nav id="side-menu" class="collapsed">
     <button id="toggle-menu" aria-label="Toggle Side Menu">&#9776;</button>
    <ul>
-  <li><a href="index.html"><span class="icon">&#127968;</span><span class="text">Home</span></a></li>
+  <li>
+    <a href="index.html">
+      <span class="icon">&#127968;</span>
+      <span class="text">Home</span>
+    </a>
+  </li>
 
-  <li><a href="../../mylibrary.html"><span class="icon">&#128218;</span><span class="text">Library</span></a></li>
+  <li>
+    <a href="mylibrary.html">
+      <span class="icon">&#128218;</span>
+      <span class="text">Library</span>
+    </a>
+  </li>
 
-  <li><a href="../../mybooks.html"><span class="icon">&#128214;</span><span class="text">Your Books</span></a></li>
+  <li>
+    <a href="mybooks.html">
+      <span class="icon">&#128214;</span>
+      <span class="text">Your Books</span>
+    </a>
+  </li>
 
-  <li><a href="../../assignments/assignment.html"><span class="icon">&#128221;</span><span class="text">Assignments</span></a></li>
+  <li>
+    <a href="assignment.html">
+      <span class="icon">&#128221;</span>
+      <span class="text">Assignments</span>
+    </a>
+  </li>
   
   <li id="authButton"></li>
 </ul>
@@ -92,26 +112,25 @@ firebase.auth().onAuthStateChanged((user) => {
     
     <section id="snapshots">
   
-  <a href="../../mylibrary.html" class="snapshot-link">
+  <a href="mylibrary.html" class="snapshot-link">
     <div class="snapshot">
       <div class="icon">🌐</div> <h3>Library</h3>
     </div>
   </a>
 
-  <a href="../../mybooks.html" class="snapshot-link">
+  <a href="mybooks.html" class="snapshot-link">
     <div class="snapshot">
       <div class="icon">📚</div> <h3>Your Books</h3>
     </div>
   </a>
 
-  <a href="../../assignments/assignment.html" class="snapshot-link">
+  <a href="assignment.html" class="snapshot-link">
     <div class="snapshot">
       <div class="icon">📝</div> <h3>Assignments</h3>
     </div>
   </a>
 
 </section>
-
   </main>
 
   <script>
@@ -124,7 +143,7 @@ function logout() {
 
   <script>
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('../service-worker.js');
+  navigator.serviceWorker.register('service-worker.js');
 }
 </script>
 <script src="home.js"></script> 
