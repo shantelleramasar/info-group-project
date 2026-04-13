@@ -1,7 +1,7 @@
 let currentSubject = ""; 
 let allData = JSON.parse(localStorage.getItem('studyHubData')) || {};
 
-// 1. Select Elements
+
 const sideMenu = document.getElementById('side-menu');
 const toggleBtn = document.getElementById('toggle-menu');
 const modal = document.getElementById('subjectModal');
@@ -31,7 +31,7 @@ const notifBanner = document.getElementById('notification-banner');
 const notifMessage = document.getElementById('notif-message');
 const closeNotif = document.getElementById('close-notif');
 
-// 2. Define the Functions
+
 function handleSidebar() {
     sideMenu.classList.toggle('expanded');
 }
@@ -49,11 +49,11 @@ function updateColorDisplay(event) {
 }
 
 function showDashboard() {
-    // Show the grid
+   
     subjectsSection.classList.remove('hidden');
-    // Hide the details
+    
     subjectDetail.classList.remove('active-view');
-    // Also explicitly hide the detail view just in case
+    
     subjectDetail.style.display = 'none'; 
 }
 
@@ -151,10 +151,10 @@ function renderAssignment(name, dateValue, subjectName = "") {
     const timeDiff = dueDate - today;
     const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
 
-    // Calculate percentage for progress bar (2-week window)
+    
     let barPercent = (daysLeft / 14) * 100;
     if (barPercent > 100) barPercent = 100;
-    if (barPercent < 0) barPercent = 0; // Don't allow negative widths
+    if (barPercent < 0) barPercent = 0; 
 
     let statusColor = daysLeft <= 3 ? "#ff4d4d" : "#f48fb1";
     let statusText = daysLeft <= 0 ? "Due Today!" : `${daysLeft} Days Left`;
@@ -163,7 +163,7 @@ function renderAssignment(name, dateValue, subjectName = "") {
     const newItem = document.createElement('div');
     newItem.className = 'assignment-item';
     
-    // Safety check for subject color
+    
     const sColor = (subjectName && allData[subjectName]) ? allData[subjectName].color : "#f8bbd0";
     const subjectTag = subjectName ? `<div class="subject-tag" style="background:${sColor}22; color:${sColor}; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; display: inline-block; margin-bottom: 5px;">${subjectName}</div>` : "";
 
@@ -197,7 +197,7 @@ function saveToLocalStorage() {
     localStorage.setItem('studyHubData', JSON.stringify(allData));
 }
 
-// 3. Assign Event Listeners
+
 assignForm.addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -299,7 +299,7 @@ qaQuickAdd.addEventListener('click', function() {
         subjectSelect.appendChild(option);
     });
 
-    assignModal.style.display = 'flex'; // This forces it to center
+    assignModal.style.display = 'flex'; 
 });
 
 function loadSavedUI() {
@@ -314,5 +314,5 @@ function loadSavedUI() {
     checkUpcomingDeadlines();
 }
 
-// ✅ RUN THE STARTUP
+
 loadSavedUI();

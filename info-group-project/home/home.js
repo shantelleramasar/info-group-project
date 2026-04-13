@@ -1,4 +1,4 @@
-// --- 1. SIDE MENU TOGGLE LOGIC ---
+
 const menuToggle = document.getElementById('toggle-menu');
 const sideMenu = document.getElementById('side-menu');
 
@@ -17,7 +17,7 @@ document.querySelectorAll('.snapshot, #side-menu ul li').forEach(item => {
 
         const pageName = titleElement.innerText.trim();
 
-        // Redirect logic based on the text found
+       
         if (pageName === "Home") window.location.href = "home.html";
         if (pageName === "Library") window.location.href = "library.html";
         if (pageName === "Your Books") window.location.href = "books.html";
@@ -25,7 +25,7 @@ document.querySelectorAll('.snapshot, #side-menu ul li').forEach(item => {
     });
 });
 
-// --- 3. OPEN LIBRARY API SEARCH & DISPLAY ---
+
 const searchInput = document.getElementById('search-input');
 const searchBtn = document.getElementById('search-btn');
 const slider1 = document.querySelector('#book-slider-1 .book-slider');
@@ -33,7 +33,7 @@ const slider1 = document.querySelector('#book-slider-1 .book-slider');
 async function fetchBooks(query = "textbooks") {
     if (!slider1) return;
 
-    // Show loading state
+    
     slider1.innerHTML = "<p style='color: #1a2b56; padding: 20px;'>Fetching books...</p>";
     if (searchBtn) searchBtn.innerText = "Searching...";
     
@@ -41,7 +41,7 @@ async function fetchBooks(query = "textbooks") {
         const response = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=8`);
         const data = await response.json();
         
-        slider1.innerHTML = ""; // Clear the loading message
+        slider1.innerHTML = ""; 
 
         if (data.docs.length === 0) {
             slider1.innerHTML = "<p style='padding: 20px;'>No books found.</p>";
@@ -73,7 +73,7 @@ async function fetchBooks(query = "textbooks") {
     }
 }
 
-// Event listener for the Search Button
+
 if (searchBtn) {
     searchBtn.addEventListener('click', () => {
     const query = searchInput.value.trim();

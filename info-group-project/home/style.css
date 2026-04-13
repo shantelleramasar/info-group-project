@@ -27,11 +27,11 @@ body {
 
 
 main {
-    margin-left: 70px;
-    padding: 40px;
-    width: calc(100% - 70px);
-    background-color: rgba(255, 255, 255, 0.6); /* This creates a "frosted glass" look */
-    min-height: 100vh;
+margin-left: 70px;
+padding: 40px;
+width: calc(100% - 70px);
+background-color: rgba(255, 255, 255, 0.6); /* This creates a "frosted glass" look */
+min-height: 100vh;
 }
 
 
@@ -82,7 +82,7 @@ position: fixed;
   cursor: pointer;
 }
 
-/* When NOT collapsed, the menu grows */
+
 #side-menu:not(.collapsed) {
     width: 200px;
     align-items: flex-start;

@@ -1,385 +1,197 @@
 
-let myBooks      = JSON.parse(localStorage.getItem('sv_mybooks')      || '[]');
-let readingTimes = JSON.parse(localStorage.getItem('sv_readingTimes') || '{}');
-let favorites    = JSON.parse(localStorage.getItem('sv_favorites')    || '[]');
+let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+let readingTimes = JSON.parse(localStorage.getItem("readingTimes")) || {}; 
+let activeTimer = null;
+let secondsElapsed = 0;
+let currentBookId = null;
 
-let timerInterval  = null;
-let timerSeconds   = 0;
-let currentBookKey = null;
 
-const COVER_BASE = 'https://covers.openlibrary.org/b/id/';
+const sideMenu = document.getElementById("side-menu");
+const toggleMenuBtn = document.getElementById("toggle-menu");
+const favoritesTrigger = document.getElementById("menu");
+const favoritesSidebar = document.getElementById("sidebar");
+const closeFavoritesBtn = document.getElementById("closeSidebar");
+const favoritesList = document.getElementById("favoritesList");
 
-const hamburger      = document.getElementById('hamburger');
-const slideMenu      = document.getElementById('slideMenu');
-const menuOverlay    = document.getElementById('menuOverlay');
-const slideClose     = document.getElementById('slideClose');
+const favBooksGrid = document.getElementById("favBooksGrid");
+const recentBooksGrid = document.getElementById("recentBooksGrid");
+const top5List = document.getElementById("top5List");
 
-const searchBtn      = document.getElementById('searchBtn');
-const searchBarWrap  = document.getElementById('searchBarWrap');
-const searchInput    = document.getElementById('searchInput');
-const searchClear    = document.getElementById('searchClear');
+const modalOverlay = document.getElementById("modalOverlay");
+const modalClose = document.getElementById("modalClose");
+const timerDisplay = document.getElementById("timerDisplay");
 
-const recentGrid     = document.getElementById('recentBooksGrid');
-const recentEmpty    = document.getElementById('recentEmpty');
-const recentCount    = document.getElementById('recentCount');
 
-const top5List       = document.getElementById('top5List');
-const top5Empty      = document.getElementById('top5Empty');
 
-const favGrid        = document.getElementById('favBooksGrid');
-const favEmpty       = document.getElementById('favEmpty');
-const favCount       = document.getElementById('favCount');
-
-const modalOverlay   = document.getElementById('modalOverlay');
-const modalClose     = document.getElementById('modalClose');
-const modalCover     = document.getElementById('modalCover');
-const modalTitle     = document.getElementById('modalTitle');
-const modalAuthor    = document.getElementById('modalAuthor');
-const modalYear      = document.getElementById('modalYear');
-const modalPublisher = document.getElementById('modalPublisher');
-const modalDesc      = document.getElementById('modalDescription');
-const modalSubjects  = document.getElementById('modalSubjects');
-
-const timerDisplay   = document.getElementById('timerDisplay');
-const timerStart     = document.getElementById('timerStart');
-const timerStop      = document.getElementById('timerStop');
-const timerClear     = document.getElementById('timerClear');
-const sessionTimeEl  = document.getElementById('sessionTime');
-const totalTimeEl    = document.getElementById('totalTimeDisplay');
-
-function saveAll() {
-  localStorage.setItem('sv_mybooks',      JSON.stringify(myBooks));
-  localStorage.setItem('sv_readingTimes', JSON.stringify(readingTimes));
-  localStorage.setItem('sv_favorites',    JSON.stringify(favorites));
+function initPage() {
+    favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+    readingTimes = JSON.parse(localStorage.getItem("readingTimes")) || {};
+    
+    renderGrids();
+    renderSidebarFavorites();
 }
 
-function bookKey(book) {
-  return book.key || String(book.cover_i) || book.title;
+
+
+function renderGrids() {
+    favBooksGrid.innerHTML = favorites.length 
+        ? favorites.map(book => createBookCard(book)).join("") 
+        : `<p class="empty-state">No books saved.</p>`;
+
+    const recent = [...favorites].reverse().slice(0, 5);
+    recentBooksGrid.innerHTML = recent.length 
+        ? recent.map(book => createBookCard(book)).join("") 
+        : `<p class="empty-state">No recent activity.</p>`;
+
+    document.getElementById("favCount").textContent = `${favorites.length} books`;
+    document.getElementById("recentCount").textContent = `${recent.length} books`;
+
+    renderTop5();
 }
 
-function formatHMS(secs) {
-  const h = Math.floor(secs / 3600);
-  const m = Math.floor((secs % 3600) / 60);
-  const s = secs % 60;
-  return `${h}h ${m}m ${s}s`;
-}
+function createBookCard(book) {
+    const time = readingTimes[book.key] || 0;
+    
+    
+    const coverUrl = book.cover_i 
+        ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg` 
+        : `https://via.placeholder.com/150x220?text=No+Cover`;
 
-function formatClock(secs) {
-  const h = String(Math.floor(secs / 3600)).padStart(2,'0');
-  const m = String(Math.floor((secs % 3600) / 60)).padStart(2,'0');
-  const s = String(secs % 60).padStart(2,'0');
-  return `${h}:${m}:${s}`;
-}
+    
+    const author = (book.author_name && book.author_name.length > 0) 
+        ? book.author_name[0] 
+        : "Unknown Author";
 
-hamburger.addEventListener('click', () => {
-  slideMenu.classList.add('open');
-  menuOverlay.classList.add('active');
-});
-function closeMenu() {
-  slideMenu.classList.remove('open');
-  menuOverlay.classList.remove('active');
-}
-slideClose.addEventListener('click', closeMenu);
-menuOverlay.addEventListener('click', closeMenu);
-
-document.querySelectorAll('.slide-nav a').forEach(a => {
-  a.addEventListener('click', closeMenu);
-});
-
-searchBtn.addEventListener('click', () => {
-  const open = searchBarWrap.classList.toggle('open');
-  if (open) searchInput.focus();
-  else {
-    searchInput.value = '';
-    renderAll();
-  }
-});
-searchClear.addEventListener('click', () => {
-  searchInput.value = '';
-  searchBarWrap.classList.remove('open');
-  renderAll();
-});
-searchInput.addEventListener('input', () => {
-  const q = searchInput.value.toLowerCase();
-  renderRecent(q);
-  renderFavorites(q);
-});
-
-function renderAll(filter = '') {
-  renderRecent(filter);
-  renderFavorites(filter);
-  renderTop5();
-}
-
-function renderRecent(filter = '') {
-  const list = filter
-    ? myBooks.filter(b =>
-        b.title.toLowerCase().includes(filter) ||
-        (b.author_name || []).join(' ').toLowerCase().includes(filter))
-    : myBooks;
-
-  recentCount.textContent = `${list.length} book${list.length !== 1 ? 's' : ''}`;
-  clearGrid(recentGrid);
-
-  if (list.length === 0) { recentEmpty.style.display = 'flex'; return; }
-  recentEmpty.style.display = 'none';
-  list.forEach(b => recentGrid.appendChild(buildCard(b)));
-}
-
-function renderFavorites(filter = '') {
-  const favBooks = myBooks.filter(b => favorites.includes(bookKey(b)));
-  const list = filter
-    ? favBooks.filter(b =>
-        b.title.toLowerCase().includes(filter) ||
-        (b.author_name || []).join(' ').toLowerCase().includes(filter))
-    : favBooks;
-
-  favCount.textContent = `${list.length} book${list.length !== 1 ? 's' : ''}`;
-  clearGrid(favGrid);
-
-  if (list.length === 0) { favEmpty.style.display = 'flex'; return; }
-  favEmpty.style.display = 'none';
-  list.forEach(b => favGrid.appendChild(buildCard(b)));
+    return `
+        <div class="book-card" data-id="${book.key}" data-title="${book.title}" data-author="${author}">
+            <div class="book-cover-area">
+                <img src="${coverUrl}" alt="${book.title}">
+            </div>
+            <div class="book-card-body">
+    <div class="book-card-title">${book.title}</div>
+    <div class="book-card-author">${author}</div>
+    <div style="font-size: 11px; color: #4a90d9; margin-top: 5px; font-weight: 500;">
+     ${formatTime(time)} recorded
+     </div>
+      </div>
+      </div>
+    `;
 }
 
 function renderTop5() {
-  clearList(top5List);
+    const sorted = [...favorites]
+        .map(b => ({ ...b, time: readingTimes[b.key] || 0 }))
+        .sort((a, b) => b.time - a.time)
+        .slice(0, 5);
 
-  const sorted = [...myBooks]
-    .filter(b => (readingTimes[bookKey(b)] || 0) > 0)
-    .sort((a, b) => (readingTimes[bookKey(b)] || 0) - (readingTimes[bookKey(a)] || 0))
-    .slice(0, 5);
-
-  if (sorted.length === 0) { top5Empty.style.display = 'flex'; return; }
-  top5Empty.style.display = 'none';
-
-  const medals = ['🥇','🥈','🥉','4','5'];
-  sorted.forEach((book, i) => {
-    const key    = bookKey(book);
-    const secs   = readingTimes[key] || 0;
-    const author = (book.author_name || ['Unknown']).join(', ');
-    const cover  = book.cover_i ? `${COVER_BASE}${book.cover_i}-S.jpg` : null;
-
-    const item = document.createElement('div');
-    item.className = 'top5-item';
-    item.innerHTML = `
-      <div class="top5-rank rank-${i+1}">${medals[i]}</div>
-      ${cover
-        ? `<img class="top5-thumb" src="${cover}" alt="${book.title}" onerror="this.outerHTML='<div class=top5-thumb-placeholder>📖</div>'">`
-        : `<div class="top5-thumb-placeholder">📖</div>`}
-      <div class="top5-info">
-        <div class="top5-name">${book.title}</div>
-        <div class="top5-author">${author}</div>
-      </div>
-      <div class="top5-time">${formatHMS(secs)}</div>
-    `;
-    item.addEventListener('click', () => openModal(book));
-    top5List.appendChild(item);
-  });
-}
-
-function buildCard(book) {
-  const key    = bookKey(book);
-  const author = (book.author_name || ['Unknown']).join(', ');
-  const secs   = readingTimes[key] || 0;
-  const isFav  = favorites.includes(key);
-  const cover  = book.cover_i ? `${COVER_BASE}${book.cover_i}-M.jpg` : null;
-
-  const card = document.createElement('div');
-  card.className = 'book-card';
-  card.innerHTML = `
-    <div class="book-cover-area">
-      ${cover
-        ? `<img src="${cover}" alt="${book.title}" loading="lazy" onerror="this.outerHTML='<div class=book-cover-placeholder>📖</div>'">`
-        : `<div class="book-cover-placeholder">📖</div>`}
-
-      <!-- Heart: top-left -->
-      <button class="btn-heart ${isFav ? 'active' : ''}" data-key="${key}" title="Favorite">
-        ${isFav ? '❤️' : '🤍'}
-      </button>
-
-      <!-- Time icon: top-right with tooltip -->
-      <div class="time-badge" title="Reading time">
-        ⏱
-        <div class="time-tooltip">
-          <strong>Total reading time</strong><br>
-          ${secs > 0 ? formatHMS(secs) : 'Not started yet'}
-        </div>
-      </div>
-    </div>
-
-    <div class="book-card-body">
-      <div class="book-card-title">${book.title}</div>
-      <div class="book-card-author">${author}</div>
-    </div>
-  `;
-
-  card.addEventListener('click', (e) => {
-    if (e.target.closest('.btn-heart')) return;
-    openModal(book);
-  });
-
-  card.querySelector('.btn-heart').addEventListener('click', (e) => {
-    e.stopPropagation();
-    toggleFav(key, e.currentTarget);
-  });
-
-  return card;
-}
-
-function toggleFav(key, btn) {
-  if (favorites.includes(key)) {
-    favorites = favorites.filter(k => k !== key);
-    btn.classList.remove('active');
-    btn.textContent = '🤍';
-  } else {
-    favorites.push(key);
-    btn.classList.add('active');
-    btn.textContent = '❤️';
-  }
-  saveAll();
-  renderFavorites(searchInput.value.toLowerCase());
-}
-
-function clearGrid(grid) {
-  Array.from(grid.children).forEach(c => {
-    if (!c.classList.contains('empty-state')) c.remove();
-  });
-}
-function clearList(list) {
-  Array.from(list.children).forEach(c => {
-    if (!c.classList.contains('empty-state')) c.remove();
-  });
-}
-
-async function openModal(book) {
-  currentBookKey = bookKey(book);
-  stopTimer();
-
-  timerSeconds = 0;
-  timerDisplay.textContent = '00:00:00';
-  sessionTimeEl.textContent = '0h 0m 0s';
-  totalTimeEl.textContent = formatHMS(readingTimes[currentBookKey] || 0);
-  timerStart.disabled = false;
-  timerStop.disabled  = true;
-
-  const author = (book.author_name || ['Unknown']).join(', ');
-  modalTitle.textContent  = book.title;
-  modalAuthor.textContent = `by ${author}`;
-  modalYear.textContent   = book.first_publish_year ? `First published: ${book.first_publish_year}` : '';
-  modalPublisher.textContent = '';
-  modalDesc.textContent   = 'Loading details…';
-  modalSubjects.innerHTML = '';
-
-  if (book.cover_i) {
-    modalCover.src           = `${COVER_BASE}${book.cover_i}-L.jpg`;
-    modalCover.style.display = 'block';
-  } else {
-    modalCover.src           = '';
-    modalCover.style.display = 'none';
-  }
-
-  modalOverlay.classList.add('active');
-  document.body.style.overflow = 'hidden';
-
-  try {
-    if (book.key) {
-      const res  = await fetch(`https://openlibrary.org${book.key}.json`);
-      const data = await res.json();
-
-      modalDesc.textContent = data.description
-        ? (typeof data.description === 'string' ? data.description : data.description.value || '')
-        : 'No description available.';
-
-      if (data.subjects && data.subjects.length) {
-        data.subjects.slice(0, 8).forEach(s => {
-          const tag = document.createElement('span');
-          tag.className   = 'modal-tag';
-          tag.textContent = s;
-          modalSubjects.appendChild(tag);
-        });
-      }
-    } else {
-      modalDesc.textContent = 'No additional details available.';
+    if (sorted.length === 0 || sorted[0].time === 0) {
+        top5List.innerHTML = `<p class="empty-state">Start the timer to rank books!</p>`;
+        return;
     }
-  } catch {
-    modalDesc.textContent = 'Could not load details.';
-  }
+
+    top5List.innerHTML = sorted.map((book, i) => `
+        <div class="top5-item">
+            <span class="top5-rank rank-${i+1}">${i+1}</span>
+            <div class="top5-info">
+            <div class="top5-name">${book.title}</div>
+            <div class="top5-time">${formatTime(book.time)}</div>
+            </div>
+        </div>
+    `).join("");
 }
 
-function closeModal() {
-  stopTimer();
-  modalOverlay.classList.remove('active');
-  document.body.style.overflow = '';
-  currentBookKey = null;
-}
+// --- 3. MODAL & EXTERNAL LINK ---
 
-modalClose.addEventListener('click', closeModal);
-modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+document.addEventListener("click", (e) => {
+    const card = e.target.closest(".book-card");
+    if (!card) return;
 
-timerStart.addEventListener('click', () => {
-  if (timerInterval) return;
-  timerStart.disabled = true;
-  timerStop.disabled  = false;
-  timerInterval = setInterval(() => {
-    timerSeconds++;
-    timerDisplay.textContent  = formatClock(timerSeconds);
-    sessionTimeEl.textContent = formatHMS(timerSeconds);
-  }, 1000);
+    currentBookId = card.dataset.id;
+    
+    document.getElementById("modalTitle").textContent = card.dataset.title;
+    document.getElementById("modalAuthor").textContent = card.dataset.author;
+    document.getElementById("modalCover").src = card.querySelector('img').src;
+    
+    // API Access Link
+    const openLibraryLink = `https://openlibrary.org${currentBookId}`;
+    document.getElementById("modalDescription").innerHTML = `
+        <p style="margin-bottom: 20px; font-size: 0.9rem; opacity: 0.8;">Use the timer to track your study sessions for this title.</p>
+        <a href="${openLibraryLink}" target="_blank" style="display: inline-block; padding: 10px 15px; background: #4a90d9; color: white; text-decoration: none; border-radius: 8px; font-size: 0.85rem; font-weight: bold;">
+            View on Open Library ↗
+        </a>
+    `;
+    
+    updateModalTimes();
+    modalOverlay.classList.add("active");
 });
 
-timerStop.addEventListener('click', stopTimer);
+// --- 4. TIMER LOGIC ---
 
-function stopTimer() {
-  if (!timerInterval) return;
-  clearInterval(timerInterval);
-  timerInterval = null;
-  timerStart.disabled = false;
-  timerStop.disabled  = true;
+const startBtn = document.getElementById("timerStart");
+const stopBtn = document.getElementById("timerStop");
 
-  if (currentBookKey && timerSeconds > 0) {
-    readingTimes[currentBookKey] = (readingTimes[currentBookKey] || 0) + timerSeconds;
-    saveAll();
-    totalTimeEl.textContent = formatHMS(readingTimes[currentBookKey]);
-    renderAll(searchInput.value.toLowerCase());
-  }
-
-  timerSeconds = 0;
-  timerDisplay.textContent  = '00:00:00';
-  sessionTimeEl.textContent = '0h 0m 0s';
-}
-
-timerClear.addEventListener('click', () => {
-  stopTimer();
-  if (currentBookKey) {
-    readingTimes[currentBookKey] = 0;
-    saveAll();
-    totalTimeEl.textContent = '0h 0m 0s';
-    renderAll(searchInput.value.toLowerCase());
-  }
+startBtn.addEventListener("click", () => {
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+    secondsElapsed = 0;
+    activeTimer = setInterval(() => {
+        secondsElapsed++;
+        timerDisplay.textContent = new Date(secondsElapsed * 1000).toISOString().substr(11, 8);
+    }, 1000);
 });
 
-// Library page calls: localStorage.setItem('sv_addBook', JSON.stringify(bookObj))
-window.addEventListener('storage', e => {
-  if (e.key === 'sv_addBook' && e.newValue) {
-    try {
-      addBook(JSON.parse(e.newValue));
-      localStorage.removeItem('sv_addBook');
-    } catch {}
-  }
+stopBtn.addEventListener("click", () => {
+    if (!activeTimer) return;
+    clearInterval(activeTimer);
+    activeTimer = null;
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+
+    readingTimes[currentBookId] = (readingTimes[currentBookId] || 0) + secondsElapsed;
+    localStorage.setItem("readingTimes", JSON.stringify(readingTimes));
+    
+    document.getElementById("sessionTime").textContent = formatTime(secondsElapsed);
+    updateModalTimes();
+    renderGrids(); 
 });
 
+// --- 5. UTILITIES ---
 
-window.addBookToMyBooks = addBook;
-
-function addBook(book) {
-  const key = bookKey(book);
-  if (!myBooks.some(b => bookKey(b) === key)) {
-    myBooks.unshift(book);
-    saveAll();
-    renderAll(searchInput.value.toLowerCase());
-  }
+function formatTime(s) {
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = s % 60;
+    return `${h}h ${m}m ${sec}s`;
 }
 
-renderAll();
+function updateModalTimes() {
+    const total = readingTimes[currentBookId] || 0;
+    document.getElementById("totalTimeDisplay").textContent = formatTime(total);
+}
+
+function renderSidebarFavorites() {
+    const favs = JSON.parse(localStorage.getItem("favorites")) || [];
+    favoritesList.innerHTML = favs.length 
+        ? favs.map(b => `<p style="padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.8rem;">${b.title}</p>`).join("") 
+        : "<p>No favorites yet.</p>";
+}
+
+
+toggleMenuBtn.addEventListener("click", () => sideMenu.classList.toggle("collapsed"));
+favoritesTrigger.addEventListener("click", (e) => { e.preventDefault(); favoritesSidebar.classList.add("active"); });
+closeFavoritesBtn.addEventListener("click", () => favoritesSidebar.classList.remove("active"));
+modalClose.addEventListener("click", () => { 
+    if(activeTimer) stopBtn.click();
+    modalOverlay.classList.remove("active"); 
+});
+
+document.getElementById("timerClear").addEventListener("click", () => {
+    if(confirm("Reset lifetime progress for this book?")) {
+    readingTimes[currentBookId] = 0;
+    localStorage.setItem("readingTimes", JSON.stringify(readingTimes));
+    updateModalTimes();
+    renderGrids();
+    }
+});
+
+initPage();
