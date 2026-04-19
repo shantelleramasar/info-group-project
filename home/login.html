@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Login</title>
+<title>Login</title>
 </head>
 
 <body>
@@ -21,28 +21,28 @@
 
 <script>
 const firebaseConfig = {
-  apiKey: "AIzaSyAT74JRqSabG-CyfQSYLGM6I_TIFuudAkk",
-  authDomain: "info-group-project-5db1f.firebaseapp.com",
-  projectId: "info-group-project-5db1f",
-  storageBucket: "info-group-project-5db1f.firebasestorage.app",
-  messagingSenderId: "654146332109",
-  appId: "1:654146332109:web:e4f3001036c040a2885084"
+apiKey: "AIzaSyAT74JRqSabG-CyfQSYLGM6I_TIFuudAkk",
+authDomain: "info-group-project-5db1f.firebaseapp.com",
+projectId: "info-group-project-5db1f",
+storageBucket: "info-group-project-5db1f.firebasestorage.app",
+messagingSenderId: "654146332109",
+appId: "1:654146332109:web:e4f3001036c040a2885084"
 };
 
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
 function login() {
-  const email = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
+const email = document.getElementById("username").value;
+const password = document.getElementById("password").value;
 
-  auth.signInWithEmailAndPassword(email, password)
-    .then(() => {
-      window.location.href = "index.html";
-    })
-    .catch(() => {
-      document.getElementById("msg").innerText = "Invalid login";
-    });
+auth.signInWithEmailAndPassword(email, password)
+.then(() => {
+  window.location.href = "index.html";
+})
+.catch(() => {
+  document.getElementById("msg").innerText = "Invalid login";
+});
 }
 </script>
 

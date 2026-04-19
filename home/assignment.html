@@ -1,122 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Study Hub</title>
-    <link rel="stylesheet" href="assignment.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Hub</title>
+<link rel="stylesheet" href="assignment.css">
 </head>
 <body>
-    <nav id="side-menu" class="collapsed">
-        <button id="toggle-menu" aria-label="Toggle Side Menu">&#9776;</button>
-        <ul>
-            <li><a href="index.html"><span class="icon">🏠</span><span class="text">Home</span></a></li>
-            <li><a href="library.html"><span class="icon">📚</span><span class="text">Library</span></a></li>
-            <li><a href="books.html"><span class="icon">📖</span><span class="text">Your Books</span></a></li>
-            <li><a href="assignments.html" class="active"><span class="icon">📝</span><span class="text">Assignments</span></a></li>
-            <li><a href="analytics.html"><span class="icon">📊</span><span class="text">Analytics</span></a></li>
-            <li><a href="profile.html"><span class="icon">👤</span><span class="text">Profile</span></a></li>
-        </ul>
-    </nav>
+<nav id="side-menu" class="collapsed">
+<button id="toggle-menu" aria-label="Toggle Side Menu">&#9776;</button>
+<ul>
+<li><a href="index.html"><span class="icon">🏠</span><span class="text">Home</span></a></li>
+<li><a href="library.html"><span class="icon">📚</span><span class="text">Library</span></a></li>
+<li><a href="books.html"><span class="icon">📖</span><span class="text">Your Books</span></a></li>
+<li><a href="assignments.html" class="active"><span class="icon">📝</span><span class="text">Assignments</span></a></li>
+<li><a href="analytics.html"><span class="icon">📊</span><span class="text">Analytics</span></a></li>
+<li><a href="profile.html"><span class="icon">👤</span><span class="text">Profile</span></a></li>
+</ul>
+</nav>
 
 
-    <div class="container">
-        <div class="banner"></div>
+<div class="container">
+<div class="banner"></div>
 
-        <div id="notification-banner" class="hidden">
-    <span class="notif-icon">⚠️</span>
-    <span id="notif-message"></span>
-    <button id="close-notif">&times;</button>
+<div id="notification-banner" class="hidden">
+<span class="notif-icon">⚠️</span>
+<span id="notif-message"></span>
+<button id="close-notif">&times;</button>
 </div>
-        <header>
-            <h1>Assignments</h1>
-        </header>
+<header>
+<h1>Assignments</h1>
+</header>
 
-        <main class="content-wrapper">
-            <section class="subjects-section">
-                <div class="section-header">
-                    <h2>Subjects</h2>
-                </div>
-
-                <div class="subject-grid">
-    <div class="add-subject-card">
-        <span class="plus-icon">+</span>
-        <p>Add Subject</p>
-    </div>
+<main class="content-wrapper">
+<section class="subjects-section">
+<div class="section-header">
+    <h2>Subjects</h2>
 </div>
-            </section>
 
-            <section class="subject-detail-view" id="subjectDetail">
-    <div class="detail-header">
-        <button class="back-btn">← Back to Dashboard</button>
-        <h2>Subject Name</h2>
-    </div>
-
-    <div class="assignment-list">
-        <button class="add-assignment-btn">+ Add Assignment</button>
-    </div>
+<div class="subject-grid">
+<div class="add-subject-card">
+<span class="plus-icon">+</span>
+<p>Add Subject</p>
+</div>
+</div>
 </section>
-            <aside class="sidebar">
-    <div class="sidebar-box">
-        <h3>Navigation</h3>
-        <ul>
-            <li id="nav-subjects" style="cursor: pointer;">🎓 Subjects</li>
-            <li id="nav-assignments" style="cursor: pointer;">✅ All Assignments</li>
-        </ul>
-    </div>
 
-                <div class="sidebar-box">
-    <h3>Quick Actions</h3>
-    <button id="qa-new-subject">+ New Subject</button>
-    
-    <button id="qa-quick-add">+ New Assignment</button>
+<section class="subject-detail-view" id="subjectDetail">
+<div class="detail-header">
+<button class="back-btn">← Back to Dashboard</button>
+<h2>Subject Name</h2>
 </div>
-            </aside>
-        </main>
-    </div>
+
+<div class="assignment-list">
+<button class="add-assignment-btn">+ Add Assignment</button>
+</div>
+</section>
+<aside class="sidebar">
+<div class="sidebar-box">
+<h3>Navigation</h3>
+<ul>
+<li id="nav-subjects" style="cursor: pointer;">🎓 Subjects</li>
+<li id="nav-assignments" style="cursor: pointer;">✅ All Assignments</li>
+</ul>
+</div>
+
+<div class="sidebar-box">
+<h3>Quick Actions</h3>
+<button id="qa-new-subject">+ New Subject</button>
+
+<button id="qa-quick-add">+ New Assignment</button>
+</div>
+</aside>
+</main>
+</div>
 <div class="modal-overlay" id="subjectModal">
-    <div class="modal-content">
-        <h3>Add New Subject</h3>
-        <form>
-            <label for="subjectName">Subject Name</label>
-            <input type="text" id="subjectName" placeholder="e.g. Data Structures">
-            
-            <label for="subjectColor">Pick a Theme Color</label>
-            <div class="color-picker-container">
-            <input type="color" id="subjectColor" value="#f8bbd0">
-            <span class="custom-color-circle"></span>
+<div class="modal-content">
+<h3>Add New Subject</h3>
+<form>
+<label for="subjectName">Subject Name</label>
+<input type="text" id="subjectName" placeholder="e.g. Data Structures">
+
+<label for="subjectColor">Pick a Theme Color</label>
+<div class="color-picker-container">
+<input type="color" id="subjectColor" value="#f8bbd0">
+<span class="custom-color-circle"></span>
 </div>
-            
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel">Cancel</button>
-                <button type="submit" class="btn-save">Save Subject</button>
-            </div>
-        </form>
-    </div>
+
+<div class="modal-actions">
+<button type="button" class="btn-cancel">Cancel</button>
+<button type="submit" class="btn-save">Save Subject</button>
+</div>
+</form>
+</div>
 </div>
 
 <div class="modal-overlay" id="assignmentModal">
-    <div class="modal-content">
-        <h3>Add New Assignment</h3>
-        <form id="assignmentForm">
-            <div id="subject-select-group" class="hidden-field">
-    <label for="assignSubject">Subject</label>
-    <select id="assignSubject">
-        <option value="" disabled selected>Choose a subject...</option>
-    </select>
+<div class="modal-content">
+<h3>Add New Assignment</h3>
+<form id="assignmentForm">
+<div id="subject-select-group" class="hidden-field">
+<label for="assignSubject">Subject</label>
+<select id="assignSubject">
+<option value="" disabled selected>Choose a subject...</option>
+</select>
 </div>
-            <label for="assignName">Assignment Name</label>
-            <input type="text" id="assignName" placeholder="e.g. Binary Search Trees Lab" required>
-            
-            <label for="assignDate">Due Date</label>
-            <input type="date" id="assignDate" required>
-            
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel" id="closeAssignModal">Cancel</button>
-                <button type="submit" class="btn-save">Add Assignment</button>
-            </div>
-        </form>
-    </div>
+<label for="assignName">Assignment Name</label>
+<input type="text" id="assignName" placeholder="e.g. Binary Search Trees Lab" required>
+
+<label for="assignDate">Due Date</label>
+<input type="date" id="assignDate" required>
+
+<div class="modal-actions">
+<button type="button" class="btn-cancel" id="closeAssignModal">Cancel</button>
+<button type="submit" class="btn-save">Add Assignment</button>
+</div>
+</form>
+</div>
 </div>
 
 <script src="assignment.js"></script>
